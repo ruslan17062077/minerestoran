@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minerestoran/database/auth/model.dart';
+
 import 'package:minerestoran/pages/auth.dart';
 import 'package:minerestoran/pages/home.dart';
 import 'package:provider/provider.dart';

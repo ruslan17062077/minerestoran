@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:minerestoran/database/auth/service.dart';
+import "dart:async";
+
+import 'package:toast/toast.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -9,9 +13,11 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   bool visibility = false;
-
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passCotroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -25,10 +31,11 @@ class _AuthPageState extends State<AuthPage> {
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
-                child: const TextField(
-                  style: TextStyle(color: Colors.white),
+                child: TextField(
+                  controller: emailController,
+                  style: const TextStyle(color: Colors.white),
                   cursorColor: Colors.white,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       labelText: "Email",
                       hintText: "Email",
                       hintStyle: TextStyle(color: Colors.white),
@@ -49,33 +56,35 @@ class _AuthPageState extends State<AuthPage> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: TextField(
-                    style: const TextStyle(color: Colors.white),
-                    obscureText: !visibility,
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(
-                        labelText: "Password",
-                        hintText: "Password",
-                        hintStyle: const TextStyle(color: Colors.white),
-                        labelStyle: const TextStyle(color: Colors.white),
-                        border: const OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.elliptical(10, 10)),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.password,
-                          color: Colors.white,
-                        ),
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                visibility = !visibility;
-                              });
-                            },
-                            icon: const Icon(
-                              Icons.visibility,
-                              color: Colors.white,
-                            )))),
+                  style: TextStyle(color: Colors.white),
+                  obscureText: !visibility,
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                      labelText: "Password",
+                      hintText: "Password",
+                      hintStyle: const TextStyle(color: Colors.white),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      border: const OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.all(Radius.elliptical(10, 10)),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.password,
+                        color: Colors.white,
+                      ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              visibility = !visibility;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.visibility,
+                            color: Colors.white,
+                          ))),
+                  controller: passCotroller,
+                ),
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
@@ -84,8 +93,26 @@ class _AuthPageState extends State<AuthPage> {
                 width: MediaQuery.of(context).size.width * 0.55,
                 height: MediaQuery.of(context).size.height * 0.06,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.popAndPushNamed(context, "/home");
+                  onPressed: () async {
+                    if (emailController.text.isEmpty ||
+                        passCotroller.text.isEmpty) {
+                      Toast.show("Заполните поля");
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (context) =>
+                              const Center(child: CircularProgressIndicator()));
+                      Future.delayed(const Duration(seconds: 5), () {});
+                      var user = await AuthService()
+                          .singIn(emailController.text, passCotroller.text);
+                      if (user != null) {
+                        Toast.show("Вы успешно вошли");
+                        Navigator.pushNamed(context, "/");
+                      } else {
+                        Navigator.pop(context);
+                        Toast.show("Такого пользователя нет");
+                      }
+                    }
                   },
                   child: const Text("Войти"),
                 ),

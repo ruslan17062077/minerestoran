@@ -18,7 +18,8 @@ class OrderPage extends StatelessWidget {
                 children: [Text("Дата"), Text("Сумма")],
               ),
               leading: Image.asset("images/logo.png"),
-              onTap: () {},
+              onTap: () {
+              },
             ),
           )
         ],

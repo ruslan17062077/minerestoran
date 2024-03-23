@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minerestoran/database/auth/service.dart';
 import 'package:minerestoran/pages/BottomPages/Menu.dart';
 import 'package:minerestoran/pages/BottomPages/order.dart';
 import 'package:minerestoran/pages/BottomPages/profile.dart';
@@ -18,10 +19,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await AuthService().logOut();
+                  Navigator.pushNamed(context, "/");
+                },
+                icon: Icon(
+                  Icons.logout,
+                  color: Colors.orange,
+                ))
+          ],
           title: Text(
-        title,
-        style: const TextStyle(color: Colors.white),
-      )),
+            title,
+            style: const TextStyle(color: Colors.white),
+          )),
+      drawer: null,
       body: pages.elementAt(index),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
